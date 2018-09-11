@@ -7,8 +7,15 @@ import BootstrapVue from 'bootstrap-vue'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import { Navbar } from 'bootstrap-vue/es/components';
+import { Table } from 'bootstrap-vue/es/components';
+
+
 
 Vue.use(BootstrapVue);
+Vue.use(Table);
+
+Vue.use(Navbar);
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

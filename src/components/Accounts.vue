@@ -2,22 +2,43 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <!-- <h1>{{ response }}</h1> -->
-    <div id="form">
-       <input type="text" v-model="input.id" placeholder="id" />
-       <input type="text" v-model="input.name" placeholder="Name" />
-       <input type="text" v-model="input.description" placeholder="description" />
-       <input type="text" v-model="input.accountTypeId" placeholder="Account Type Id" />
-       <input type="text" v-model="input.groupId" placeholder="Group Id" />
-       <button v-on:click="sendData()">Send</button>
+    
+    <b-card no-body>
+      <b-tabs card>
+        <!-- Render Tabs -->
+        <b-tab :title="item.name" v-for="item in items" :key="item.id" @click="()=>loadAccountTypes(item.id)">
+          <h4>{{item.name}} Accounts </h4> 
+          <div>
+           <div  v-for="type in categories" :key="'account_type'+type.id"> 
+              <b>{{type.name}}</b>
+              <div v-for="account in type.accounts" :key="'account'+account.id">
+                 <i> {{account.name}} </i>
+              </div>
+            </div> 
+            <div>
+               <b-btn @click="modalShow = !modalShow">Add New Account</b-btn>
+               <!-- Modal Component -->
+              <b-modal v-model="modalShow" id="modal1" title="Account Form" ok-title="Save" @ok="createAccount()">
+                  <b-form-input type="text" v-model="input.id" placeholder="Id" />
+                  <b-form-input type="text" v-model="input.name" placeholder="Name" required />
+                  <b-form-select  :options="categories"  value-field="id" v-model="input.accountTypeId" text-field="name"	 
+                          placeholder="Account Type" required>
+                    <template slot="first">
+                      <!-- this slot appears above the options from 'options' prop -->
+                      <option :value="null" disabled>-- Please select an option --</option>
+                    </template>
+                  </b-form-select>
+                  <b-form-input type="text" v-model="input.description" placeholder="Description" />
+              </b-modal>
+            </div>
+          </div>
+        </b-tab>
+      </b-tabs>
+    </b-card>
+
+
     </div>
-    <div id="accounts">
-      <div :id="item.id"  v-for="item in items">
-       Name:  {{ item.name }}
-        
-       <span v-if="item.description" > Desc:  {{ item.description }}</span>
-       </div>
-     </div>
-    </div>
+   
 </template>
 
 <script>
@@ -27,38 +48,68 @@ export default {
   name: 'Accounts',
   data () {
     return {
-      msg: 'Accounts Page',
+      msg: 'Accounts',
       response : "",
       items: [],
+      categories:[],
       input: {
-                id:0,
+                id:-1,
                 name:"",
                 description:"",
-                accountTypeId: 1,
-                groupId: 1,
-                baseUrl: "https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/" //http://localhost:5000/
-            }
+                accountTypeId: null,
+                groupId: -1
+                
+            },
+      
+
+      modalShow: false,
+      baseUrl: "https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/" //http://localhost:5000/
+      
     }
   },
   
   mounted() {
-    axios.get(this.baseUrl + "api/accounts").then(result => {
-                this.response = result.data;
-                this.items = this.response;
+    axios.get(this.baseUrl + "api/accountcategory").then(result => {
+                this.items = result.data;
+                if(this.items.length){
+                  this.input.groupId = items[0].id;
+                }
+
             }, error => {
                 console.error(error);
             });
         },
-        methods: {
-            sendData() {
-                axios({ method: "POST", "url": this.baseUrl +"api/accounts", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
+        
+  methods: {
+    loadAccountTypes(id) {
+        this.input.groupId = id;
+        axios.get(this.baseUrl + "api/accountcategory/types?group="+id).then(result => {
+        this.response = result.data;
+        this.categories = this.response;
+        }, error => {
+                console.error(error);
+        });
+        },
+
+     createAccount() {
+
+                axios({ method: "POST", "url": this.baseUrl + "api/accounts", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
                     this.response = result.data;
-                    this.items.push(this.response);
+                    if(this.response) {
+                      var accountType =  this.categories.find(t=>t.id == this.response.accountTypeId);
+                      if(accountType) {
+                         accountType.accounts.push(this.response); 
+                      }
+                    } 
+                    
                 }, error => {
                     console.error(error);
                 });
-            }
-        }
+                
+      }
+    }
+    
+        
 }
 </script>
 
