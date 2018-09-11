@@ -86,7 +86,7 @@ export default {
       
 
       modalShow: false,
-      baseUrl: "http://localhost:5000/"   //"https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/" //http://localhost:5000/
+      baseUrl: "https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/" //http://localhost:5000/
       
     }
   },
