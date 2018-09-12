@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <b-container>
-    <img src="./assets/logo.png">
+    
     <div>
-  <b-navbar type="dark" variant="primary" toggleable>
+  <b-navbar type="dark" variant="primary" toggleable v-if="authenticated">
     <b-navbar-toggle target="nav_dropdown_collapse"></b-navbar-toggle>
     <b-collapse is-nav id="nav_dropdown_collapse">
       <b-navbar-nav>
@@ -17,6 +17,7 @@
           <b-dropdown-item href="#">Account</b-dropdown-item>
           <b-dropdown-item href="#">Settings</b-dropdown-item>
         </b-nav-item-dropdown>
+        <b-nav-item  @click="logout()">Logout</b-nav-item>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -27,8 +28,34 @@
 </template>
 
 <script>
+
 export default {
-  name: 'App'
+  name: 'App',
+  computed: { 
+    authenticated: function () {
+      // `this` points to the vm instance
+      return this.$store.getters.isLoggedIn
+    }
+   
+  },
+  methods: {
+      logout: function () {
+        this.$store.dispatch('logout')
+        .then(() => {
+          this.$router.push('/Login')
+        })
+      }
+    },
+   created: function () {
+    this.$http.interceptors.response.use(undefined, function (err) {
+      return new Promise(function (resolve, reject) {
+        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+          this.$store.dispatch(logout)
+        }
+        throw err;
+      });
+    });
+  }
 }
 </script>
 

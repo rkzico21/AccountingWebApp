@@ -19,7 +19,6 @@
                <b-btn @click="modalShow = !modalShow">Add New Account</b-btn>
                <!-- Modal Component -->
               <b-modal v-model="modalShow" id="modal1" title="Account Form" ok-title="Save" @ok="createAccount()">
-                  <b-form-input type="text" v-model="input.id" placeholder="Id" />
                   <b-form-input type="text" v-model="input.name" placeholder="Name" required />
                   <b-form-select  :options="categories"  value-field="id" v-model="input.accountTypeId" text-field="name"	 
                           placeholder="Account Type" required>

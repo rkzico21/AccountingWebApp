@@ -7,9 +7,10 @@ import BootstrapVue from 'bootstrap-vue'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import { Navbar } from 'bootstrap-vue/es/components';
-import { Table } from 'bootstrap-vue/es/components';
-
+import { Navbar } from 'bootstrap-vue/es/components'
+import { Table } from 'bootstrap-vue/es/components'
+import store from './store'
+import Axios from 'axios'
 
 
 Vue.use(BootstrapVue);
@@ -18,10 +19,19 @@ Vue.use(Table);
 Vue.use(Navbar);
 Vue.config.productionTip = false
 
+
+
+Vue.prototype.$http = Axios;
+const token = localStorage.getItem('token')
+if (token) {
+  Vue.prototype.$http.defaults.headers.common['Authorization'] = token
+}
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })
