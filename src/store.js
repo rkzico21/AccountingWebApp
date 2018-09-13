@@ -25,6 +25,7 @@ export default new Vuex.Store({
       logout(state){
         state.status = ''
         state.token = ''
+        state.user = {}
       },
 
   },
@@ -62,6 +63,7 @@ export default new Vuex.Store({
   getters : {
     isLoggedIn: state => !!state.token,
     authStatus: state => state.status,
+    user: state => state.user
 
   }
 })

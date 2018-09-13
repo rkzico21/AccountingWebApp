@@ -52,7 +52,6 @@ export default {
       items: [],
       categories:[],
       input: {
-                id:-1,
                 name:"",
                 description:"",
                 accountTypeId: null,
@@ -68,7 +67,7 @@ export default {
   },
   
   mounted() {
-    axios.get(this.baseUrl + "api/accountcategory").then(result => {
+     this.$http.get(this.baseUrl + "api/accountcategory").then(result => {
                 this.items = result.data;
                 if(this.items.length){
                   this.input.groupId = items[0].id;
@@ -82,7 +81,7 @@ export default {
   methods: {
     loadAccountTypes(id) {
         this.input.groupId = id;
-        axios.get(this.baseUrl + "api/accountcategory/types?group="+id).then(result => {
+        this.$http.get(this.baseUrl + "api/accountcategory/types?group="+id).then(result => {
         this.response = result.data;
         this.categories = this.response;
         }, error => {
@@ -92,7 +91,7 @@ export default {
 
      createAccount() {
 
-                axios({ method: "POST", "url": this.baseUrl + "api/accounts", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
+                 this.$http({ method: "POST", "url": this.baseUrl + "api/accounts", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
                     this.response = result.data;
                     if(this.response) {
                       var accountType =  this.categories.find(t=>t.id == this.response.accountTypeId);
