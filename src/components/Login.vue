@@ -4,7 +4,7 @@
     <!-- <h1>{{ response }}</h1> -->
        
           <div>
-    <b-form @submit="login" inline>
+    <b-form @submit.prevent="login" inline>
       
         <b-form-input id="emailInput"
                       type="email"
@@ -16,9 +16,9 @@
                       type="text"
                       v-model="input.password"
                       required
-                      placeholder="Enter name">
+                      placeholder="Enter password">
         </b-form-input>
-        <b-button type="submit" variant="primary">Submit</b-button>
+        <b-button type="submit" variant="primary">Login</b-button>
     </b-form>
   </div>
      </div>
@@ -31,9 +31,11 @@
     name: 'Login',
     data () {
       return {
-        input: {
-        email: 'user1@example.com',
-        password: 'dogy'}
+        input: 
+          {
+            email: null,
+            password: null
+          }
       }
     },
     methods: {

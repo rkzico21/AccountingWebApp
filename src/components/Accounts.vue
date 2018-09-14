@@ -41,7 +41,6 @@
 </template>
 
 <script>
- import axios from "axios";
 
 export default {
   name: 'Accounts',
@@ -61,13 +60,12 @@ export default {
       
 
       modalShow: false,
-      baseUrl: "https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/" //http://localhost:5000/
       
     }
   },
   
   mounted() {
-     this.$http.get(this.baseUrl + "api/accountcategory").then(result => {
+     this.$http.get("accountcategory").then(result => {
                 this.items = result.data;
                 if(this.items.length){
                   this.input.groupId = items[0].id;
@@ -81,7 +79,9 @@ export default {
   methods: {
     loadAccountTypes(id) {
         this.input.groupId = id;
-        this.$http.get(this.baseUrl + "api/accountcategory/types?group="+id).then(result => {
+        var groupQuery = "group="+id;
+        var orgQuery = "&orgid=" + JSON.parse(localStorage.getItem('user')).organizationId;
+        this.$http.get("accountcategory/types?" + groupQuery + orgQuery ).then(result => {
         this.response = result.data;
         this.categories = this.response;
         }, error => {
@@ -91,7 +91,7 @@ export default {
 
      createAccount() {
 
-                 this.$http({ method: "POST", "url": this.baseUrl + "api/accounts", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
+                 this.$http({ method: "POST", "url": "accounts", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
                     this.response = result.data;
                     if(this.response) {
                       var accountType =  this.categories.find(t=>t.id == this.response.accountTypeId);

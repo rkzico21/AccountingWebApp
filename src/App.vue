@@ -13,11 +13,10 @@
           <b-dropdown-item to="/Transactions">Transactions</b-dropdown-item>
           <b-dropdown-item to="/Accounts">Chart of Accounts</b-dropdown-item>
         </b-nav-item-dropdown>
-        <b-nav-item-dropdown text="User" right>
-          <b-dropdown-item href="#">Account</b-dropdown-item>
-          <b-dropdown-item href="#">Settings</b-dropdown-item>
+        <b-nav-item-dropdown :text="user.name" right>
+            <b-dropdown-item  @click="logout()">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
-        <b-nav-item  @click="logout()">Logout</b-nav-item>
+        
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -31,11 +30,29 @@
 
 export default {
   name: 'App',
+  data () {
+      return {
+        user : null
+      }
+    },
+
   computed: { 
     authenticated: function () {
-      // `this` points to the vm instance
+      if(this.$store.getters.isLoggedIn) {
+          var userJson = localStorage.getItem("user");
+          if(userJson){
+              var loggedInUser =  JSON.parse(userJson);
+              this.user = loggedInUser;
+          }
+      } else {
+         this.user = ""
+      }
+
+      
       return this.$store.getters.isLoggedIn
-    }
+    },
+
+    
    
   },
   methods: {

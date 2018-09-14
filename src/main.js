@@ -10,7 +10,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import { Navbar } from 'bootstrap-vue/es/components'
 import { Table } from 'bootstrap-vue/es/components'
 import store from './store'
-import Axios from 'axios'
+import axios from 'axios'
 
 
 Vue.use(BootstrapVue);
@@ -20,11 +20,11 @@ Vue.use(Navbar);
 Vue.config.productionTip = false
 
 
-
-Vue.prototype.$http = Axios;
+axios.defaults.baseURL="http://localhost:5000/api/"
+Vue.prototype.$http = axios;
 const token = localStorage.getItem('token')
 if (token) {
-  Vue.prototype.$http.defaults.headers.common['Authorization'] = token
+  Vue.prototype.$http.defaults.headers.common['Authorization'] = "Bearer "+ token
 }
 
 /* eslint-disable no-new */

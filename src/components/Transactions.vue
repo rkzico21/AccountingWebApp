@@ -20,7 +20,6 @@
                <b-btn @click="modalShow = !modalShow">Add Transaction</b-btn>
                <!-- Modal Component -->
               <b-modal v-model="modalShow" id="modal1" title="Transaction Details" ok-title="Save" @ok="createTransaction()">
-                  <b-form-input type="text" v-model="input.id" placeholder="Id" />
                   <b-form-input type="text" v-model="input.description" placeholder="Description" required />
                   <b-form-select  :options="accounts"  value-field="id" v-model="input.accountId" text-field="name"	 
                           placeholder="Account" required>
@@ -38,7 +37,6 @@
 </template>
 
 <script>
- import axios from "axios";
 
 export default {
   name: 'Transactions',
@@ -85,8 +83,7 @@ export default {
       },
       
 
-      modalShow: false,
-      baseUrl: "https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/" //http://localhost:5000/
+      modalShow: false
       
     }
   },
@@ -103,7 +100,7 @@ export default {
     },
 
     loadTransactions() {
-          axios.get(this.baseUrl + "api/transactions").then(result => {
+          this.$http.get("transactions").then(result => {
                 this.items = result.data;
             }, error => {
                 console.error(error);
@@ -112,7 +109,7 @@ export default {
     },
 
     loadAccounts() {
-          axios.get(this.baseUrl + "api/accounts").then(result => {
+          this.$http.get("accounts").then(result => {
                 this.accounts = result.data;
                 if(this.accounts.length){
                   this.input.accountId = this.accounts[0].id;
@@ -121,11 +118,12 @@ export default {
             }, error => {
                 console.error(error);
             });
+        
     },
 
     createTransaction() {
                
-                axios({ method: "POST", "url": this.baseUrl + "api/transactions", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
+                this.$http({ method: "POST", "url": "transactions", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
                     this.response = result.data;
                     if(this.response) {
                       this.items.push(this.response);
@@ -138,7 +136,7 @@ export default {
     },
 
     deleteTransaction(id) {
-      axios({ method: "DELETE", "url": this.baseUrl + "api/transactions/"+id }).then(result => {
+      this.$http({ method: "DELETE", "url": "transactions/"+id }).then(result => {
                   var transaction =  this.items.find(t=>t.id == id);
                   if(transaction) {
                     this.items.splice(  this.items.indexOf(transaction), 1 );
