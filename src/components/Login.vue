@@ -13,7 +13,7 @@
                       placeholder="Enter email">
         </b-form-input>
         <b-form-input id="passwordInput"
-                      type="text"
+                      type="password"
                       v-model="input.password"
                       required
                       placeholder="Enter password">
