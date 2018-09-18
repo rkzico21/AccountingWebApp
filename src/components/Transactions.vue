@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    
     <!-- <h1>{{ response }}</h1> -->
        
           <div>
@@ -17,6 +17,12 @@
               </b-table>
 
             <div>
+                <b-button-group>
+                  <b-dropdown right split text="Add Transaction">
+                   <b-dropdown-item @click="modalShow = !modalShow">Add Income/Expense</b-dropdown-item>
+                   <b-dropdown-item @click="modalShowJournal = !modalShowJournal">Add Journal</b-dropdown-item>
+                 </b-dropdown>
+                </b-button-group>
                <b-btn @click="modalShow = !modalShow">Add Transaction</b-btn>
                <!-- Modal Component -->
               <b-modal v-model="modalShow" id="modal1" title="Transaction Details" ok-title="Save" @ok="createTransaction()">
@@ -29,6 +35,30 @@
                           placeholder="Deposit or Withdrawal" required>
                   </b-form-select>
                   <b-form-input type="amount" v-model="input.amount" placeholder="Total amount" />
+              </b-modal>
+              <b-modal v-model="modalShowJournal" id="modal2" title="Transaction Details" ok-title="Save" @ok="createTransaction()">
+                  <b-form-input type="date" v-model="input.transactionDate" placeholder="Date" />
+                  
+                  <b-list-group>
+                   <b-list-group-item v-for="credit in credits" :key="'credit'+credit.creditId">
+                     <b-form-select  :options="accounts"  value-field="id" v-model="credit.accountId" text-field="name"	 
+                          placeholder="Account" required>
+                     </b-form-select>
+                     <b-form-input type="text" v-model="credit.amount" placeholder="Credit amount" />
+                     <a href="#" @click="removeCredit(credit.creditId)">Remove Credit</a> 
+                   </b-list-group-item>
+                  </b-list-group>
+                  <a href="#" @click="addCredit()">Add Credit</a>
+                  <b-list-group>
+                   <b-list-group-item v-for="debit in debits" :key="'debit'+debit.debitId">
+                     <b-form-select  :options="accounts"  value-field="id" v-model="debit.accountId" text-field="name"	 
+                          placeholder="Account" required>
+                     </b-form-select>
+                     <b-form-input type="text" v-model="debit.amount" placeholder="Debit amount" />
+                     <a href="#" @click="removeDebit(debit.debitId)">Remove Debit</a> 
+                   </b-list-group-item>
+                  </b-list-group>
+                  <a href="#" @click="addDebit()">Add Debit</a>
               </b-modal>
             </div>
           </div>
@@ -47,7 +77,8 @@ export default {
       items: [],
       transactionTypes: [
         { id: 1, name:"Deposit"},
-        { id: 2, name:"Withdrawal"}
+        { id: 2, name:"Withdrawal"},
+        
       ],
       accounts: [],
       input: {
@@ -82,8 +113,25 @@ export default {
         { key: 'delete', label: '' }
       },
       
+      debits: [
+        {
+          debitId: this.$uuid.v4(),
+          accountId: null,
+          amount: 0
+          }
+      ],
+      credits:[
+      {
+          creditId: this.$uuid.v4(),
+          accountId: null,
+          amount: 0
 
-      modalShow: false
+      }
+      ],
+
+      modalShow: false,
+
+      modalShowJournal: false
       
     }
   },
@@ -145,6 +193,35 @@ export default {
                     console.error(error);
                 });
     }, 
+
+    addCredit() {
+        this.credits.push({creditId: this.$uuid.v4(), accountId:1, amount:0 });
+    },
+
+    addDebit() {
+        this.debits.push({debitId: this.$uuid.v4(), accountId:1, amount:0 });
+    },
+
+    removeCredit(id) {
+      
+        if(this.credits.length <=1)
+           return; 
+
+        var credit =  this.credits.find(t=>t.creditId == id);
+        console.log(credit);
+                  if(credit) {
+                    this.credits.splice(  this.credits.indexOf(credit), 1 );
+                  }
+    },
+
+    removeDebit(id) {
+      if(this.debits.length <=1)
+           return;
+       var debit =  this.debits.find(t=>t.debitId == id);
+                  if(debit) {
+                    this.debits.splice(  this.debits.indexOf(debit), 1 );
+                  } 
+    },
 
     getAccount(id) {
        var account = this.accounts.find(a=>a.id = id);

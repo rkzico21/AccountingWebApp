@@ -11,6 +11,9 @@ import { Navbar } from 'bootstrap-vue/es/components'
 import { Table } from 'bootstrap-vue/es/components'
 import store from './store'
 import axios from 'axios'
+import UUID from 'vue-uuid'
+ 
+Vue.use(UUID)
 
 
 Vue.use(BootstrapVue);
@@ -20,7 +23,7 @@ Vue.use(Navbar);
 Vue.config.productionTip = false
 
 
-axios.defaults.baseURL= "http://localhost:5000/api/"//"https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/api"   //"http://localhost:5000/api/"
+axios.defaults.baseURL= "http://localhost:5000/api/"//"https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/api"   //
 Vue.prototype.$http = axios;
 const token = localStorage.getItem('token')
 if (token) {
