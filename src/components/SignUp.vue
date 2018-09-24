@@ -1,11 +1,10 @@
 <template>
-  <div class="hello">
+   <div class="hello">
     
     <!-- <h1>{{ response }}</h1> -->
        
           <div>
-            
-    <b-form @submit.prevent="login" inline>
+    <b-form @submit.prevent="signup" inline>
       
         <b-form-input id="emailInput"
                       type="email"
@@ -19,44 +18,37 @@
                       required
                       placeholder="Enter password">
         </b-form-input>
-        <b-button type="submit" variant="primary">Login</b-button>
+        <b-button type="submit" variant="primary">Sign Up</b-button>
     </b-form>
-    <b-link to="SignUp">SignUp</b-link>
   </div>
-     </div>
-   
+  </div>
 </template>
 
 <script>
-
-  export default {
-    name: 'Login',
-    data () {
-      return {
-        input: 
+export default {
+  name: 'SignUp',
+  data () {
+    return {
+       input: 
           {
             email: null,
             password: null
           }
-      }
-    },
-    methods: {
-      login: function () {
-        const { email, password } = this.input;
-        this.$store.dispatch('login', { email, password }).then(() => {
-        
-          if(localStorage.getItem('organizationId')){
-              this.$router.push('/')
-          } else {
-              this.$router.push('/Organization')
-          }
-     
-        })
-      }
-    },
-  }
-    
+    }
+  },
 
+  methods: {
+      signup: function () {
+         this.$http({ method: "POST", "url": "signup", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
+                    
+                    this.$router.push('/Login');
+                    
+                }, error => {
+                    console.error(error);
+                });
+      }
+    },
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

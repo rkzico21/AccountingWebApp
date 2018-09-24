@@ -4,6 +4,8 @@ import HelloWorld from '@/components/HelloWorld'
 import Accounts from '@/components/Accounts'
 import Transactions from '@/components/Transactions'
 import Login from '@/components/Login'
+import SignUp from '@/components/SignUp'
+import Organization from '@/components/Organization'
 
 import store from '@/store'
 
@@ -42,6 +44,17 @@ const router = new Router({
       name: 'Login',
       component: Login
     },
+    {
+      path: '/SignUp',
+      name: 'SignUp',
+      component: SignUp
+    },
+
+    {
+      path: '/Organization',
+      name: 'Organization',
+      component: Organization
+    }
 
   ]
 })

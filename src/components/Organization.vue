@@ -1,0 +1,53 @@
+<template>
+   <div class="hello">
+    
+    <!-- <h1>{{ response }}</h1> -->
+       
+          <div>
+    <b-form @submit.prevent="signup" inline>
+      
+        <b-form-input id="nameInput"
+                      type="text"
+                      v-model="input.name"
+                      required
+                      placeholder="Enter Organization Name">
+        </b-form-input>
+        <b-button type="submit" variant="primary">Create</b-button>
+    </b-form>
+  </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Organization',
+  data () {
+    return {
+       input: 
+          {
+            name: null,
+          }
+    }
+  },
+
+  methods: {
+      signup: function () {
+         this.$http({ method: "POST", "url": "organizations", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
+                    var response = result.data;
+                    localStorage.setItem("organizationId", response.id);
+                    this.$router.push('/');
+                    
+                }, error => {
+                    console.error(error);
+                });
+      }
+    },
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+h1, h2 {
+  font-weight: normal;
+}
+</style>

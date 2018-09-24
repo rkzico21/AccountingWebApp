@@ -80,7 +80,7 @@ export default {
     loadAccountTypes(id) {
         this.input.groupId = id;
         var groupQuery = "group="+id;
-        var orgQuery = "&orgid=" + JSON.parse(localStorage.getItem('user')).organizationId;
+        var orgQuery = "&orgid=" + (localStorage.getItem('organizationId'));
         this.$http.get("accountcategory/types?" + groupQuery + orgQuery ).then(result => {
         this.response = result.data;
         this.categories = this.response;
