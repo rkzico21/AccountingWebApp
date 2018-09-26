@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <b-container>
+    <b-container fluid>
     
     <div>
   <b-navbar type="dark" variant="primary" toggleable v-if="authenticated">
@@ -13,7 +13,7 @@
           <b-dropdown-item to="/Transactions">Transactions</b-dropdown-item>
           <b-dropdown-item to="/Accounts">Chart of Accounts</b-dropdown-item>
         </b-nav-item-dropdown>
-        <b-nav-item-dropdown :text="user.name" right>
+        <b-nav-item-dropdown :text="userName" right>
             <b-dropdown-item  @click="logout()">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
         
@@ -32,7 +32,7 @@ export default {
   name: 'App',
   data () {
       return {
-        user : null
+        userName : null
       }
     },
 
@@ -42,10 +42,10 @@ export default {
           var userJson = localStorage.getItem("user");
           if(userJson){
               var loggedInUser =  JSON.parse(userJson);
-              this.user = loggedInUser;
+              this.userName = loggedInUser.name;
           }
       } else {
-         this.user = ""
+         this.userName = ""
       }
 
       

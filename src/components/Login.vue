@@ -2,26 +2,38 @@
   <div class="hello">
     
     <!-- <h1>{{ response }}</h1> -->
-       
-          <div>
-            
-    <b-form @submit.prevent="login" inline>
-      
-        <b-form-input id="emailInput"
+    <div>
+
+    <b-row>
+        <b-col></b-col>
+        <b-col>
+
+    <b-form @submit.prevent="login">
+        <b-form-row class="my-1">
+          <b-form-input id="emailInput"
                       type="email"
                       v-model="input.email"
                       required
-                      placeholder="Enter email">
-        </b-form-input>
+                      placeholder="Email">
+          </b-form-input>
+        </b-form-row>
+        <b-form-row class="my-1">
         <b-form-input id="passwordInput"
                       type="password"
                       v-model="input.password"
                       required
-                      placeholder="Enter password">
+                      placeholder="Password">
         </b-form-input>
-        <b-button type="submit" variant="primary">Login</b-button>
-    </b-form>
-    <b-link to="SignUp">SignUp</b-link>
+        </b-form-row>
+        <b-form-row class="my-1">
+          <b-button type="submit" variant="primary" size="sm">Login</b-button>
+         
+        </b-form-row>
+        </b-form>
+         <b-link to="SignUp">SignUp</b-link>
+    </b-col>
+    <b-col></b-col>
+    </b-row>
   </div>
      </div>
    
