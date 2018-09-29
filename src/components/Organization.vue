@@ -4,16 +4,27 @@
     <!-- <h1>{{ response }}</h1> -->
        
           <div>
-    <b-form @submit.prevent="signup" inline>
+            <b-row>
+        <b-col></b-col>
+        <b-col>
+    <b-form @submit.prevent="signup">
       
+      <b-form-row class="my-1">
+         
         <b-form-input id="nameInput"
                       type="text"
                       v-model="input.name"
                       required
-                      placeholder="Enter Organization Name">
+                      placeholder="Enter Business Name">
         </b-form-input>
-        <b-button type="submit" variant="primary">Create</b-button>
+         </b-form-row>
+         <b-form-row class="my-1">
+          <b-button type="submit" variant="primary">Create</b-button>
+         </b-form-row>
     </b-form>
+        </b-col>
+        <b-col></b-col>
+            </b-row>
   </div>
   </div>
 </template>
