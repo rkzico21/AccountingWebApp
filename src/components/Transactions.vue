@@ -23,9 +23,8 @@
                    <b-dropdown-item @click="modalShowJournal = !modalShowJournal">Add Journal</b-dropdown-item>
                  </b-dropdown>
                 </b-button-group>
-               <b-btn @click="modalShow = !modalShow">Add Transaction</b-btn>
                <!-- Modal Component -->
-              <b-modal v-model="modalShow" id="modal1" title="Transaction Details" ok-title="Save" @ok="createTransaction()">
+              <b-modal v-model="modalShow" id="modal1" title="Transaction Details" ok-title="Save" @ok="createTransaction(false)">
                   <b-form-input type="text" v-model="input.description" placeholder="Description" required />
                   <b-form-select  :options="accounts"  value-field="id" v-model="input.accountId" text-field="name"	 
                           placeholder="Account" required>
@@ -36,11 +35,13 @@
                   </b-form-select>
                   <b-form-input type="amount" v-model="input.amount" placeholder="Total amount" />
               </b-modal>
-              <b-modal v-model="modalShowJournal" id="modal2" title="Transaction Details" ok-title="Save" @ok="createTransaction()">
-                  <b-form-input type="date" v-model="input.transactionDate" placeholder="Date" />
+              <b-modal v-model="modalShowJournal" id="modal2" title="Transaction Details" ok-title="Save" @ok="createTransaction(true)">
+                  <b-form-input type="text" v-model="journal.description" placeholder="Description" required />
+                  
+                  <b-form-input type="date" v-model="journal.transactionDate" placeholder="Date" />
                   
                   <b-list-group>
-                   <b-list-group-item v-for="credit in credits" :key="'credit'+credit.creditId">
+                   <b-list-group-item v-for="credit in journal.credits" :key="'credit'+credit.creditId">
                      <b-form-select  :options="accounts"  value-field="id" v-model="credit.accountId" text-field="name"	 
                           placeholder="Account" required>
                      </b-form-select>
@@ -50,7 +51,7 @@
                   </b-list-group>
                   <a href="#" @click="addCredit()">Add Credit</a>
                   <b-list-group>
-                   <b-list-group-item v-for="debit in debits" :key="'debit'+debit.debitId">
+                   <b-list-group-item v-for="debit in journal.debits" :key="'debit'+debit.debitId">
                      <b-form-select  :options="accounts"  value-field="id" v-model="debit.accountId" text-field="name"	 
                           placeholder="Account" required>
                      </b-form-select>
@@ -113,21 +114,27 @@ export default {
         { key: 'delete', label: '' }
       },
       
-      debits: [
-        {
-          debitId: this.$uuid.v4(),
-          accountId: null,
-          amount: 0
-          }
-      ],
-      credits:[
-      {
-          creditId: this.$uuid.v4(),
-          accountId: null,
-          amount: 0
-
-      }
-      ],
+     journal: {
+                id:-1,
+                description:"",
+                transactionDate:new Date().toISOString().slice(0,10),                
+                transactionTypeId: 3,
+                amount: 0.00,
+                debits: [
+                  {
+                    debitId: this.$uuid.v4(),
+                    accountId: null,
+                    amount: 0,
+                    transactionType: "debit"
+                  }],
+                credits:[
+                  {
+                    creditId: this.$uuid.v4(),
+                    accountId: null,
+                    amount: 0,
+                    transactionType: "credit"
+                  }
+                ]},
 
       modalShow: false,
 
@@ -169,9 +176,14 @@ export default {
         
     },
 
-    createTransaction() {
-               
-                this.$http({ method: "POST", "url": "transactions", "data": this.input, "headers": { "content-type": "application/json" } }).then(result => {
+    createTransaction(journal) {
+               var data = this.input;
+
+               if(journal) {
+                 data = this.journal;
+               }
+
+                this.$http({ method: "POST", "url": "transactions", "data": data, "headers": { "content-type": "application/json" } }).then(result => {
                     this.response = result.data;
                     if(this.response) {
                       this.items.push(this.response);
@@ -195,31 +207,31 @@ export default {
     }, 
 
     addCredit() {
-        this.credits.push({creditId: this.$uuid.v4(), accountId:1, amount:0 });
+        this.journal.credits.push({creditId: this.$uuid.v4(), accountId:1, amount:0 });
     },
 
     addDebit() {
-        this.debits.push({debitId: this.$uuid.v4(), accountId:1, amount:0 });
+        this.journal.debits.push({debitId: this.$uuid.v4(), accountId:1, amount:0 });
     },
 
     removeCredit(id) {
       
-        if(this.credits.length <=1)
+        if(this.journal.credits.length <=1)
            return; 
 
-        var credit =  this.credits.find(t=>t.creditId == id);
+        var credit =  this.journal.credits.find(t=>t.creditId == id);
         console.log(credit);
                   if(credit) {
-                    this.credits.splice(  this.credits.indexOf(credit), 1 );
+                    this.journal.credits.splice(  this.journal.credits.indexOf(credit), 1 );
                   }
     },
 
     removeDebit(id) {
-      if(this.debits.length <=1)
+      if(this.journal.debits.length <=1)
            return;
-       var debit =  this.debits.find(t=>t.debitId == id);
+       var debit =  this.journal.debits.find(t=>t.debitId == id);
                   if(debit) {
-                    this.debits.splice(  this.debits.indexOf(debit), 1 );
+                    this.journal.debits.splice(  this.journal.debits.indexOf(debit), 1 );
                   } 
     },
 
