@@ -19,7 +19,7 @@
             <div>
                 <b-button-group>
                   <b-dropdown right split text="Add Transaction">
-                   <b-dropdown-item @click="modalShow = !modalShow">Add Income/Expense</b-dropdown-item>
+                   <b-dropdown-item @click="modalShow = !modalShow" v-if="modalShow">Add Income/Expense</b-dropdown-item>
                    <b-dropdown-item @click="modalShowJournal = !modalShowJournal">Add Journal</b-dropdown-item>
                  </b-dropdown>
                 </b-button-group>
@@ -37,25 +37,32 @@
               </b-modal>
               <b-modal v-model="modalShowJournal" id="modal2" title="Transaction Details" ok-title="Save" @ok="createTransaction(true)">
                   <b-form-input type="text" v-model="journal.description" placeholder="Description" required />
-                  
+                  <b-form-row>
+                    <b-col sm="6">
                   <b-form-input type="date" v-model="journal.transactionDate" placeholder="Date" />
-                  
+                    </b-col>
+                  <b-col sm="5"><b-form-text>Amount:</b-form-text> 
+                  <b-form-text><b>{{amount}}</b></b-form-text>
+                  </b-col>
+                  </b-form-row>
                   <b-list-group>
                    <b-list-group-item v-for="credit in journal.credits" :key="'credit'+credit.creditId">
-                     <b-form-select  :options="accounts"  value-field="id" v-model="credit.accountId" text-field="name"	 
-                          placeholder="Account" required>
+                     <b-form-select  :options="accounts"  v-model="credit.accountId" 	 
+                          placeholder="Account" required v-on:change="signalDropdwonChange">
+                         
                      </b-form-select>
-                     <b-form-input type="text" v-model="credit.amount" placeholder="Credit amount" />
+                     <b-form-input type="number" v-model="credit.amount" placeholder="Credit amount" v-on:change="signalChange"/>
                      <a href="#" @click="removeCredit(credit.creditId)">Remove Credit</a> 
                    </b-list-group-item>
                   </b-list-group>
                   <a href="#" @click="addCredit()">Add Credit</a>
                   <b-list-group>
                    <b-list-group-item v-for="debit in journal.debits" :key="'debit'+debit.debitId">
-                     <b-form-select  :options="accounts"  value-field="id" v-model="debit.accountId" text-field="name"	 
-                          placeholder="Account" required>
+                     <b-form-select  :options="accounts"  v-model="debit.accountId" 
+                          placeholder="Account" required v-on:change="signalDropdwonChange">
+                           
                      </b-form-select>
-                     <b-form-input type="text" v-model="debit.amount" placeholder="Debit amount" />
+                     <b-form-input type="number" v-model="debit.amount" placeholder="Debit amount" v-on:change="signalChange"/>
                      <a href="#" @click="removeDebit(debit.debitId)">Remove Debit</a> 
                    </b-list-group-item>
                   </b-list-group>
@@ -81,6 +88,7 @@ export default {
         { id: 2, name:"Withdrawal"},
         
       ],
+      amount:"0.00",
       accounts: [],
       input: {
                 id:-1,
@@ -165,11 +173,17 @@ export default {
 
     loadAccounts() {
           this.$http.get("accounts").then(result => {
-                this.accounts = result.data;
-                if(this.accounts.length){
-                  this.input.accountId = this.accounts[0].id;
+                
+                this.accounts = [];
+                if(result.data.length > 0) {
+                
+                for(var i = 0; i< result.data.length; i++)
+                {
+                      this.accounts.push({"value": result.data[i].id, text: result.data[i].name})
+                }
                 }
 
+                console.log(this.accounts[0]);
             }, error => {
                 console.error(error);
             });
@@ -182,15 +196,24 @@ export default {
                if(journal) {
                  data = this.journal;
                }
-
+                console.log(data);
                 this.$http({ method: "POST", "url": "transactions", "data": data, "headers": { "content-type": "application/json" } }).then(result => {
                     this.response = result.data;
                     if(this.response) {
                       this.items.push(this.response);
+                      
+                      this.journal.credits = [];
+                      this.journal.debits = [];
+                      this.addCredit();
+                      this.addDebit();
+                      this.journal.description = "";
+                      this.journal.amount = "0.00";
+
                     } 
                     
                 }, error => {
                     console.error(error);
+                    this.modalShowJournal = journal;
                 });
                 
     },
@@ -207,11 +230,11 @@ export default {
     }, 
 
     addCredit() {
-        this.journal.credits.push({creditId: this.$uuid.v4(), accountId:1, amount:0 });
+        this.journal.credits.push({creditId: this.$uuid.v4(), accountId:this.input.accountId, amount:0, transactionType:"credit" });
     },
 
     addDebit() {
-        this.journal.debits.push({debitId: this.$uuid.v4(), accountId:1, amount:0 });
+        this.journal.debits.push({debitId: this.$uuid.v4(), accountId:this.input.accountId, amount:0, transactionType:"debit" });
     },
 
     removeCredit(id) {
@@ -223,6 +246,7 @@ export default {
         console.log(credit);
                   if(credit) {
                     this.journal.credits.splice(  this.journal.credits.indexOf(credit), 1 );
+                    this.calculateAmount();
                   }
     },
 
@@ -232,6 +256,7 @@ export default {
        var debit =  this.journal.debits.find(t=>t.debitId == id);
                   if(debit) {
                     this.journal.debits.splice(  this.journal.debits.indexOf(debit), 1 );
+                    this.calculateAmount();
                   } 
     },
 
@@ -240,6 +265,40 @@ export default {
        if(account) {
           return account.name;
        }
+    },
+
+    signalChange: function(evt){
+        this.calculateAmount();
+    },
+
+    signalDropdwonChange: function(evt){
+        console.log("Changing");
+    },
+
+    //Todo: make it standard
+    calculateAmount() {
+        var creditAmount = 0.00;
+        for(var i =0; i< this.journal.credits.length; i++)
+        {
+            creditAmount += parseFloat(this.journal.credits[i].amount);
+        }
+
+        console.log(creditAmount);
+
+        var debitAmount = 0.00;
+        for(var i =0; i< this.journal.debits.length; i++)
+        {
+            debitAmount += parseFloat(this.journal.debits[i].amount);
+        }
+
+        if(creditAmount == debitAmount)
+        {
+            this.amount = creditAmount;
+        }
+        else
+        {
+           this.amount = "Unbalanced"
+        }
     }
 
 
