@@ -24,7 +24,7 @@
                  </b-dropdown>
                 </b-button-group>
                <!-- Modal Component -->
-              <b-modal v-model="modalShow" id="modal1" title="Transaction Details" ok-title="Save" @ok="createTransaction(false)">
+             <!-- <b-modal v-model="modalShow" id="modal1" title="Transaction Details" ok-title="Save" @ok="createTransaction(false)">
                   <b-form-input type="text" v-model="input.description" placeholder="Description" required />
                   <b-form-select  :options="accounts"  value-field="id" v-model="input.accountId" text-field="name"	 
                           placeholder="Account" required>
@@ -34,8 +34,9 @@
                           placeholder="Deposit or Withdrawal" required>
                   </b-form-select>
                   <b-form-input type="amount" v-model="input.amount" placeholder="Total amount" />
-              </b-modal>
-              <b-modal v-model="modalShowJournal" id="modal2" title="Transaction Details" ok-title="Save" @ok="createTransaction(true)">
+              </b-modal> -->
+              <b-modal v-model="modalShowJournal" id="modal2" title="Transaction Details" ok-only="true">
+                  <b-form @submit.prevent="createTransaction(true)">
                   <b-form-input type="text" v-model="journal.description" placeholder="Description" required />
                   <b-form-row>
                     <b-col sm="6">
@@ -67,6 +68,15 @@
                    </b-list-group-item>
                   </b-list-group>
                   <a href="#" @click="addDebit()">Add Debit</a>
+                  <b-form-row class="my-1">
+                      <b-button type="submit" variant="primary" size="sm">Save</b-button>
+                      <b-button variant="secondary" size="sm" @click="closeModal()">Cancel</b-button>
+         
+                  </b-form-row>
+                  </b-form>
+                   <div slot="modal-footer" class="w-100">
+                    <!-- To disable cancel and ok button > -->     
+                   </div>
               </b-modal>
             </div>
           </div>
@@ -162,6 +172,10 @@ export default {
           this.loadTransactions();
     },
 
+    closeModal() {
+      this.modalShowJournal = false;
+    },
+
     loadTransactions() {
           this.$http.get("transactions").then(result => {
                 this.items = result.data;
@@ -208,7 +222,7 @@ export default {
                       this.addDebit();
                       this.journal.description = "";
                       this.journal.amount = "0.00";
-
+                      this.modalShowJournal = false;
                     } 
                     
                 }, error => {
