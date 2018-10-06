@@ -23,7 +23,7 @@ Vue.use(Navbar);
 Vue.config.productionTip = false
 
 
-axios.defaults.baseURL= "http://localhost:5000/api/"//"https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/api"   //
+axios.defaults.baseURL= "https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/api"    //"http://localhost:5000/api/"//
 Vue.prototype.$http = axios;
 const token = localStorage.getItem('token')
 if (token) {

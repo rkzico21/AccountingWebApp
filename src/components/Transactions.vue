@@ -133,7 +133,6 @@ export default {
       },
       
      journal: {
-                id:-1,
                 description:"",
                 transactionDate:new Date().toISOString().slice(0,10),                
                 transactionTypeId: 3,
