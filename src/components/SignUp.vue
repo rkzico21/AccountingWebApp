@@ -29,7 +29,7 @@
          
         </b-form-row>
         </b-form>
-         
+        <b-link to="Login">Login</b-link>
     </b-col>
     <b-col></b-col>
     </b-row>

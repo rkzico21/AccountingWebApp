@@ -6,7 +6,7 @@ import Transactions from '@/components/Transactions'
 import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
 import Organization from '@/components/Organization'
-
+import NProgress from 'nprogress'
 import store from '@/store'
 
 Vue.use(Router)
@@ -59,6 +59,17 @@ const router = new Router({
   ]
 })
 
+router.beforeResolve((to, from, next) => {
+  // If this isn't an initial page load.
+  if (to.name) {
+      // Start the route progress bar.
+     
+  }
+
+  NProgress.start()
+  next()
+})
+
 router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)) {
     if (store.getters.isLoggedIn) {
@@ -69,6 +80,11 @@ router.beforeEach((to, from, next) => {
   } else {
     next() 
   }
+})
+
+router.afterEach((to, from) => {
+  // Complete the animation of the route progress bar.
+  NProgress.done()
 })
 
 export default router;

@@ -12,6 +12,9 @@ import { Table } from 'bootstrap-vue/es/components'
 import store from './store'
 import axios from 'axios'
 import UUID from 'vue-uuid'
+import NProgress from 'nprogress'
+
+import '../node_modules/nprogress/nprogress.css'
  
 Vue.use(UUID)
 
@@ -24,6 +27,26 @@ Vue.config.productionTip = false
 
 
 axios.defaults.baseURL= "https://2rtdu7y7ue.execute-api.us-west-2.amazonaws.com/Prod/api"    //"http://localhost:5000/api/"//
+
+axios.interceptors.request.use(function (config) {
+  // Do something before request is sent
+  NProgress.start()
+  return config;
+}, function (error) {
+  // Do something with request error
+  return Promise.reject(error);
+});
+
+// Add a response interceptor
+axios.interceptors.response.use(function (response) {
+  // Do something with response data
+  NProgress.done()
+  return response;
+}, function (error) {
+  // Do something with response error
+  return Promise.reject(error);
+});
+
 Vue.prototype.$http = axios;
 const token = localStorage.getItem('token')
 if (token) {
